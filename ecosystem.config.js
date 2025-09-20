@@ -1,0 +1,66 @@
+module.exports = {
+  apps: [
+    {
+      name: "airsense-backend",
+      cwd: "./backend",
+      script: "server.js",
+      instances: 2,
+      exec_mode: "cluster",
+      env: {
+        NODE_ENV: "development",
+        PORT: 5000,
+        FRONTEND_URL: "http://localhost:3000",
+      },
+      env_production: {
+        NODE_ENV: "production",
+        PORT: 5000,
+        OPENWEATHER_API_KEY: process.env.OPENWEATHER_API_KEY,
+        FRONTEND_URL: process.env.FRONTEND_URL || "https://yourdomain.com",
+      },
+      max_memory_restart: "500M",
+      error_file: "./logs/backend-error.log",
+      out_file: "./logs/backend-out.log",
+      log_file: "./logs/backend.log",
+      time: true,
+      autorestart: true,
+      watch: false,
+      max_restarts: 10,
+      min_uptime: "10s",
+    },
+    {
+      name: "airsense-frontend",
+      cwd: "./frontend",
+      script: "npm",
+      args: "start",
+      instances: 1,
+      env: {
+        NODE_ENV: "development",
+        PORT: 3000,
+        NEXT_PUBLIC_API_URL: "http://localhost:5000/api",
+      },
+      env_production: {
+        NODE_ENV: "production",
+        PORT: 3000,
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "https://api.yourdomain.com/api",
+      },
+      max_memory_restart: "300M",
+      autorestart: true,
+      watch: false,
+      max_restarts: 10,
+      min_uptime: "10s",
+    },
+  ],
+
+  deploy: {
+    production: {
+      user: "deploy",
+      host: "your-server.com",
+      ref: "origin/main",
+      repo: "git@github.com:username/airsense.git",
+      path: "/var/www/airsense",
+      "pre-deploy-local": "",
+      "post-deploy": "npm install && npm run build && pm2 reload ecosystem.config.js --env production",
+      "pre-setup": "",
+    },
+  },
+}
