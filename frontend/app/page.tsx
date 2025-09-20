@@ -28,21 +28,21 @@ export default function Dashboard() {
     error: currentError,
     isLoading: currentLoading,
   } = useSWR(
-    `/api/air-quality/current/${selectedLocation}`,
+    `/air-quality/current/${selectedLocation}`,
     fetcher,
     { refreshInterval: 300000 }, // Refresh every 5 minutes
   )
 
   // Fetch historical data
   const { data: historicalData, error: historicalError } = useSWR(
-    `/api/air-quality/history/${selectedLocation}?hours=${timeRange}`,
+    `/air-quality/history/${selectedLocation}?hours=${timeRange}`,
     fetcher,
     { refreshInterval: 600000 }, // Refresh every 10 minutes
   )
 
   // Fetch predictions
   const { data: predictionsData } = useSWR(
-    `/api/predictions/${selectedLocation}?hours=24`,
+    `/predictions/${selectedLocation}?hours=24`,
     fetcher,
     { refreshInterval: 1800000 }, // Refresh every 30 minutes
   )

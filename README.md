@@ -1,6 +1,6 @@
 # 🌬️ AirSense - Advanced Air Quality Monitoring & Pollution Prediction System
 
-An enterprise-grade machine learning-powered air quality monitoring and pollution prediction system for Bengaluru, featuring real-time data visualization, advanced ML algorithms, predictive analytics, and a premium user interface with next-level scrolling and animations.
+An enterprise-grade machine learning-powered air quality monitoring and pollution prediction system for Bengaluru, featuring real-time data visualization, advanced ML algorithms, predictive analytics, and a premium dark-themed user interface with smooth animations.
 
 ## 🚀 Key Features
 
@@ -13,9 +13,9 @@ An enterprise-grade machine learning-powered air quality monitoring and pollutio
 - **Automated Model Retraining** - Continuous learning from new data
 
 ### 💎 Premium UI/UX Features
-- **Dark Theme Dashboard** - Professional Vercel-inspired interface with glass morphism
+- **Dark Theme Dashboard** - Professional dark-themed interface with glass morphism effects
 - **Advanced Animations** - Framer Motion powered transitions and micro-interactions
-- **Next-Level Scrolling** - Smooth scroll effects with parallax and momentum
+- **Smooth Animations** - Fluid transitions and hover effects throughout the interface
 - **Interactive Data Visualization** - Real-time charts with hover effects and animations
 - **Responsive Design** - Mobile-first approach with adaptive layouts
 - **Premium Icons** - Lucide React icon library with custom animations
@@ -24,15 +24,15 @@ An enterprise-grade machine learning-powered air quality monitoring and pollutio
 ## 🛠️ Complete Technology Stack
 
 ### Frontend Technologies
-- **Framework**: Next.js 14 (App Router) with React 18
+- **Framework**: Next.js 14 (App Router) with React 18 and TypeScript
 - **Language**: TypeScript for type safety
-- **Styling**: Tailwind CSS v4 with custom design tokens
+- **Styling**: Tailwind CSS v3 with custom design system and dark theme
 - **Animations**: Framer Motion for advanced animations and transitions
 - **Charts**: Recharts for interactive data visualizations
 - **Icons**: Lucide React (premium icon library)
-- **UI Components**: Custom shadcn/ui components
+- **UI Components**: Custom shadcn/ui components with Radix UI primitives
 - **State Management**: SWR for data fetching and caching
-- **Build Tool**: Turbopack for fast development builds
+- **Build Tool**: Next.js built-in bundler with optimizations
 
 ### Backend Technologies
 - **Runtime**: Node.js (v18+)
@@ -87,7 +87,7 @@ An enterprise-grade machine learning-powered air quality monitoring and pollutio
 ### 1. Clone and Setup Repository
 \`\`\`bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/your-username/air-quality-ml-system.git
 cd air-quality-ml-system
 
 # Install root dependencies
@@ -99,6 +99,7 @@ npm run install:all
 
 ### 2. Environment Configuration
 
+**IMPORTANT**: You must configure environment variables before running the application.
 #### Backend Environment Setup
 \`\`\`bash
 cd backend
@@ -119,7 +120,7 @@ FRONTEND_URL=http://localhost:3000
 DB_PATH=./database/air_quality.db
 
 # ML Configuration
-ML_UPDATE_INTERVAL=3600000
+MODEL_UPDATE_INTERVAL=3600000
 PREDICTION_CONFIDENCE_THRESHOLD=0.7
 
 # Logging Configuration
@@ -130,30 +131,49 @@ LOG_FILE=./logs/app.log
 #### Frontend Environment Setup
 \`\`\`bash
 cd frontend
+cp .env.example .env.local
 \`\`\`
 
-Create `frontend/.env.local`:
+Edit `frontend/.env.local`:
 \`\`\`env
+# API Configuration (REQUIRED)
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
+
+# UI Configuration
 NEXT_PUBLIC_REFRESH_INTERVAL=30000
 NEXT_PUBLIC_CHART_ANIMATION_DURATION=1000
+NEXT_PUBLIC_APP_NAME=AirSense
+NEXT_PUBLIC_APP_VERSION=1.0.0
 \`\`\`
 
 ### 3. OpenWeather API Key Setup
+
+**CRITICAL**: The application requires a valid OpenWeather API key to function.
+
 1. Visit [OpenWeather API](https://openweathermap.org/api)
 2. Sign up for a free account (1000 calls/day limit)
 3. Navigate to API Keys section
 4. Generate a new API key
 5. Add it to your `backend/.env` file
-6. **Note**: Free tier includes air pollution data for major cities
+6. **Important**: Free tier includes air pollution data which is required for this application
 
 ### 4. Database Initialization
 \`\`\`bash
-# The SQLite database will be automatically created on first run
-# No additional setup required - the system handles schema creation
+# Database will be automatically created when the backend starts
+# No manual setup required - tables are created automatically
+
+# Optional: Verify database creation
+cd backend
+ls -la database/
 \`\`\`
 
 ## 🚀 Running the System
+
+### Prerequisites Check
+Before running, ensure you have:
+- ✅ Node.js 18+ installed
+- ✅ OpenWeather API key configured in `backend/.env`
+- ✅ All dependencies installed (`npm run install:all`)
 
 ### Quick Start (Recommended)
 \`\`\`bash
@@ -165,7 +185,7 @@ This starts:
 - **Backend API Server**: http://localhost:5000
 - **Frontend Application**: http://localhost:3000
 - **Database**: SQLite file created automatically
-- **Data Collection**: Starts automatically every 5 minutes
+- **Data Collection**: Starts automatically every 10 minutes
 
 ### Individual Services
 \`\`\`bash
@@ -175,8 +195,8 @@ npm run dev:backend
 # Frontend only (Next.js app)
 npm run dev:frontend
 
-# Database initialization only
-npm run init:db
+# Check backend health
+curl http://localhost:5000/api/health
 \`\`\`
 
 ### Production Deployment
@@ -185,10 +205,10 @@ npm run init:db
 npm run build
 
 # Start production servers
-npm run start
+npm run start:backend
 
 # Or use PM2 for process management
-npm run start:pm2
+pm2 start ecosystem.config.js --env production
 \`\`\`
 
 ### Docker Deployment
@@ -202,6 +222,8 @@ docker-compose up -d
 # View logs
 docker-compose logs -f
 \`\`\`
+# Stop services
+docker-compose down
 
 ## 🤖 Machine Learning Models Explained
 
@@ -258,41 +280,59 @@ setInterval(() => {
 
 ## 📊 API Documentation
 
+### Base URL
+- **Development**: `http://localhost:5000/api`
+- **Production**: `https://your-domain.com/api`
+
 ### Air Quality Endpoints
 \`\`\`bash
 # Current air quality data
 GET /api/air-quality/current/bengaluru
-Response: { aqi, pm25, pm10, no2, so2, co, o3, timestamp }
+Response: { 
+  success: true, 
+  data: { aqi, pm25, pm10, no2, so2, co, o3, temperature, humidity, timestamp } 
+}
 
 # Historical data with pagination
-GET /api/air-quality/history/bengaluru?days=7&page=1
-Response: { data: [...], pagination: {...} }
+GET /api/air-quality/history/bengaluru?hours=24
+Response: { success: true, data: [...], count: 24 }
 
 # Trend analysis
-GET /api/air-quality/trends/bengaluru?period=week
-Response: { trends: {...}, patterns: [...] }
+GET /api/air-quality/trends/bengaluru?period=day
+Response: { success: true, data: [...], period: "day" }
 \`\`\`
 
 ### Weather Endpoints
 \`\`\`bash
 # Current weather data
 GET /api/weather/current/bengaluru
-Response: { temp, humidity, windSpeed, pressure, visibility }
+Response: { 
+  success: true, 
+  data: { temperature, humidity, wind_speed, pressure, condition, description } 
+}
 
 # Weather forecast
-GET /api/weather/forecast/bengaluru?hours=24
-Response: { forecast: [...], confidence: 0.85 }
+GET /api/weather/forecast/bengaluru?days=5
+Response: { success: true, data: [...], location: "bengaluru" }
 \`\`\`
 
 ### ML Prediction Endpoints
 \`\`\`bash
 # Air quality predictions
 GET /api/predictions/bengaluru?hours=24
-Response: { predictions: [...], confidence: 0.82, model: "polynomial" }
+Response: { 
+  success: true, 
+  data: [...], 
+  model_info: { models_trained: [...], version: "2.0.0" } 
+}
+
+# Prediction confidence analysis
+GET /api/predictions/confidence/bengaluru
+Response: { success: true, data: [...], trends: [...] }
 
 # Model performance metrics
-GET /api/predictions/metrics
-Response: { accuracy: 0.85, lastTrained: "2024-01-15T10:30:00Z" }
+GET /api/predictions/performance/bengaluru
+Response: { success: true, data: [...], analysis_period: "7 days" }
 \`\`\`
 
 ## 🎯 System Architecture
@@ -314,19 +354,50 @@ Response: { accuracy: 0.85, lastTrained: "2024-01-15T10:30:00Z" }
 
 ## 🔍 Monitoring & Analytics
 
+### Health Check Endpoints
+```bash
+# System health
+GET /api/system/status
+Response: { 
+  success: true, 
+  system: { status: "operational", uptime: 86400 },
+  data_collector: { running: true, locations: ["bengaluru"] },
+  database: { air_quality_records: 1250 }
+}
+
+# API health check
+GET /api/health
+Response: { 
+  status: "OK", 
+  timestamp: "2024-01-15T10:30:00.000Z",
+  version: "1.0.0" 
+}
+```
+
 ### System Health Endpoints
 \`\`\`bash
-# System status
-GET /api/system/health
-Response: { status: "healthy", uptime: 86400, dbConnected: true }
 
 # Performance metrics
 GET /api/analytics/performance
-Response: { responseTime: 120, memoryUsage: "45%", cpuUsage: "12%" }
+Response: { 
+  success: true, 
+  data: { 
+    api_performance: {...}, 
+    data_quality: {...}, 
+    system_resources: {...} 
+  } 
+}
 
-# Data quality metrics
-GET /api/analytics/data-quality
-Response: { completeness: 0.98, accuracy: 0.85, freshness: "2min" }
+# Analytics summary
+GET /api/analytics/summary
+Response: { 
+  success: true, 
+  data: { 
+    data_points: {...}, 
+    air_quality_stats: {...}, 
+    system_health: {...} 
+  } 
+}
 \`\`\`
 
 ### Logging System
@@ -357,6 +428,7 @@ Response: { completeness: 0.98, accuracy: 0.85, freshness: "2min" }
 - **Input Validation**: Joi schema validation
 - **SQL Injection Prevention**: Parameterized queries
 - **Error Sanitization**: No sensitive data in error responses
+- **Helmet.js**: Security headers middleware
 
 ### Reliability Features
 - **Health Checks**: Automated system monitoring
@@ -377,6 +449,7 @@ Error: 401 Unauthorized from OpenWeather API
 - Verify API key in `backend/.env`
 - Check API key activation (can take 10 minutes)
 - Ensure sufficient API quota remaining
+- Test API key: `curl "http://api.openweathermap.org/data/2.5/weather?lat=12.9716&lon=77.5946&appid=YOUR_API_KEY"`
 
 #### 2. Database Issues
 \`\`\`bash
@@ -386,6 +459,7 @@ Error: SQLITE_CANTOPEN: unable to open database file
 - Check write permissions in backend directory
 - Ensure SQLite3 is installed: `npm install sqlite3`
 - Verify disk space availability
+- Create database directory: `mkdir -p backend/database`
 
 #### 3. Port Conflicts
 \`\`\`bash
@@ -397,7 +471,11 @@ Error: EADDRINUSE: address already in use :::3000
 lsof -ti:3000 | xargs kill -9
 
 # Or change port in package.json
+# Frontend: Change port in package.json
 "dev": "next dev -p 3001"
+
+# Backend: Change PORT in .env file
+PORT=5001
 \`\`\`
 
 #### 4. Memory Issues
@@ -409,7 +487,38 @@ Error: JavaScript heap out of memory
 # Increase Node.js memory limit
 export NODE_OPTIONS="--max-old-space-size=4096"
 npm run dev
+
+# Or add to package.json scripts
+"dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev"
 \`\`\`
+
+#### 5. Frontend UI Not Loading
+```bash
+Error: Module not found or UI components not rendering
+```
+**Solutions**:
+```bash
+# Reinstall frontend dependencies
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+
+# Check if all UI components are installed
+npm list @radix-ui/react-tabs @radix-ui/react-slot
+
+# Restart development server
+npm run dev
+```
+
+#### 6. API Connection Issues
+```bash
+Error: Failed to fetch data from API
+```
+**Solutions**:
+- Verify backend is running on port 5000
+- Check `NEXT_PUBLIC_API_URL` in frontend `.env.local`
+- Ensure CORS is properly configured
+- Test API directly: `curl http://localhost:5000/api/health`
 
 ### Debug Mode
 \`\`\`bash
@@ -419,8 +528,9 @@ DEBUG=* npm run dev
 # Backend only debugging
 DEBUG=backend:* npm run dev:backend
 
-# Database query debugging
-DEBUG=sqlite npm run dev
+# Frontend with verbose logging
+cd frontend
+npm run dev -- --verbose
 \`\`\`
 
 ## 📱 Mobile & Cross-Platform Support
@@ -430,11 +540,11 @@ DEBUG=sqlite npm run dev
 - **Tablet**: 768px - 1024px (hybrid interface)
 - **Desktop**: 1024px+ (full-featured dashboard)
 
-### Progressive Web App (PWA)
-- **Offline Support**: Service worker caching
-- **Install Prompt**: Add to home screen
-- **Push Notifications**: Air quality alerts
-- **Background Sync**: Data synchronization
+### Mobile Features
+- **Touch-Optimized**: Swipe gestures and touch interactions
+- **Responsive Charts**: Charts adapt to screen size
+- **Mobile Navigation**: Collapsible sidebar and tabs
+- **Performance**: Optimized for mobile networks
 
 ## 🤝 Contributing & Development
 
@@ -443,23 +553,32 @@ DEBUG=sqlite npm run dev
 2. Create feature branch: `git checkout -b feature/amazing-feature`
 3. Install dependencies: `npm run install:all`
 4. Start development: `npm run dev`
-5. Run tests: `npm run test`
-6. Commit changes: `git commit -m 'Add amazing feature'`
-7. Push branch: `git push origin feature/amazing-feature`
-8. Create Pull Request
+5. Make your changes
+6. Test thoroughly on both frontend and backend
+7. Commit changes: `git commit -m 'Add amazing feature'`
+8. Push branch: `git push origin feature/amazing-feature`
+9. Create Pull Request
 
 ### Code Standards
 - **TypeScript**: Strict mode enabled
 - **ESLint**: Airbnb configuration
 - **Prettier**: Code formatting
-- **Husky**: Pre-commit hooks
 - **Conventional Commits**: Commit message format
 
-### Testing Strategy
-- **Unit Tests**: Jest for utility functions
-- **Integration Tests**: API endpoint testing
-- **E2E Tests**: Playwright for user flows
-- **Performance Tests**: Lighthouse CI
+### File Structure
+```
+air-quality-ml-system/
+├── backend/                 # Node.js API server
+│   ├── routes/             # API route handlers
+│   ├── services/           # Business logic and ML
+│   ├── database/           # SQLite database and schema
+│   └── middleware/         # Express middleware
+├── frontend/               # Next.js React application
+│   ├── app/                # Next.js 14 app directory
+│   ├── components/         # React components
+│   └── lib/                # Utility functions
+└── docs/                   # Documentation
+```
 
 ## 📄 License & Legal
 
@@ -483,18 +602,30 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Getting Help
 - **GitHub Issues**: Bug reports and feature requests
-- **Discussions**: Community Q&A and ideas
 - **Documentation**: Comprehensive guides and API docs
-- **Email Support**: [your-email@domain.com]
 
-### Community Resources
-- **Discord Server**: Real-time community chat
-- **Twitter**: [@YourProject] for updates
-- **Blog**: Technical articles and tutorials
-- **Newsletter**: Monthly updates and tips
+
+### Quick Links
+- **Live Demo**: [Demo URL when available]
+- **API Documentation**: See API_DOCUMENTATION.md
+- **Deployment Guide**: See DEPLOYMENT_GUIDE.md
+- **Environment Setup**: See .env.example files
 
 ---
 
-**🌱 Built with passion for cleaner air and better health in Bengaluru**
+**🌱 Built with passion for cleaner air and better health in Bengaluru 🇮🇳**
 
-*Last updated: January 2024 | Version 2.0.0*
+*Last updated: January 2025 | Version 2.0.0*
+
+## 📋 Quick Start Checklist
+
+- [ ] Clone repository
+- [ ] Install dependencies: `npm run install:all`
+- [ ] Get OpenWeather API key
+- [ ] Configure `backend/.env` with API key
+- [ ] Configure `frontend/.env.local` with API URL
+- [ ] Run application: `npm run dev`
+- [ ] Open http://localhost:3000
+- [ ] Verify data is loading (may take 2-3 minutes for first data collection)
+
+**Need help?** Check the troubleshooting section above or create an issue on GitHub.

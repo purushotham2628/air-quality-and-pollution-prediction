@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts"
-import { format } from "date-fns"
+import { format, parseISO } from "date-fns"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface AirQualityData {
@@ -25,8 +25,8 @@ export default function AirQualityChart({ data, showTrends = false }: AirQuality
       .reverse() // Show chronological order
       .map((item) => ({
         ...item,
-        time: format(new Date(item.timestamp), "HH:mm"),
-        fullTime: format(new Date(item.timestamp), "MMM dd, HH:mm"),
+        time: format(parseISO(item.timestamp), "HH:mm"),
+        fullTime: format(parseISO(item.timestamp), "MMM dd, HH:mm"),
       }))
   }, [data])
 
