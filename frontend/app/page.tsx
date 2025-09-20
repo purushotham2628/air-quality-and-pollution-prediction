@@ -9,14 +9,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import AirQualityChart from "@/frontend/components/AirQualityChart"
-import PredictionChart from "@/frontend/components/PredictionChart"
-import WeatherWidget from "@/frontend/components/WeatherWidget"
-import MetricsGrid from "@/frontend/components/MetricsGrid"
-import AlertsPanel from "@/frontend/components/AlertsPanel"
-import LoadingSpinner from "@/frontend/components/LoadingSpinner"
+import AirQualityChart from "@/components/AirQualityChart"
+import PredictionChart from "@/components/PredictionChart"
+import WeatherWidget from "@/components/WeatherWidget"
+import MetricsGrid from "@/components/MetricsGrid"
+import AlertsPanel from "@/components/AlertsPanel"
+import LoadingSpinner from "@/components/LoadingSpinner"
 
-const fetcher = (url: string) => fetch(`http://localhost:5000${url}`).then((res) => res.json())
+const fetcher = (url: string) => fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`).then((res) => res.json())
 
 export default function Dashboard() {
   const [selectedLocation, setSelectedLocation] = useState("bengaluru")
