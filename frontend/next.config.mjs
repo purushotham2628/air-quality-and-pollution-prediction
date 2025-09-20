@@ -11,7 +11,25 @@ const nextConfig = {
   images: {
     domains: ['openweathermap.org'],
     unoptimized: true,
-  }
+  },
+  // Replit environment configuration
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+        ],
+      },
+    ]
+  },
+  // Allow all hosts for Replit proxy
+  devIndicators: {
+    autoPrerender: false,
+  },
 }
 
 export default nextConfig
