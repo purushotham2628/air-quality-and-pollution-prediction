@@ -12,6 +12,8 @@ const nextConfig = {
     domains: ['openweathermap.org'],
     unoptimized: true,
   },
+  // Enable standalone output for better deployment
+  output: 'standalone',
   // Replit environment configuration
   async headers() {
     return [
@@ -24,7 +26,7 @@ const nextConfig = {
           },
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

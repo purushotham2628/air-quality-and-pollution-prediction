@@ -4,7 +4,7 @@
   "description": "Advanced Air Quality Monitoring and Pollution Prediction System for Bengaluru",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently --kill-others \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "build": "npm run build:backend && npm run build:frontend",
@@ -12,7 +12,9 @@
     "build:frontend": "cd frontend && npm run build",
     "start": "npm run start:backend",
     "start:backend": "cd backend && npm start",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "setup": "./scripts/setup.sh",
+    "health": "curl -f http://localhost:3001/api/health || echo 'Backend not running'"
   },
   "keywords": [
     "air-quality",

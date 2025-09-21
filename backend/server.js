@@ -4,6 +4,7 @@ const helmet = require("helmet")
 const rateLimit = require("express-rate-limit")
 const errorHandler = require("./middleware/errorHandler")
 const logger = require("./middleware/logger")
+const corsMiddleware = require("./middleware/cors")
 
 require("dotenv").config()
 
@@ -15,12 +16,7 @@ app.set('trust proxy', 1)
 
 // Security middleware
 app.use(helmet())
-app.use(
-  cors({
-    origin: [process.env.FRONTEND_URL || "http://localhost:5000", "https://*.replit.dev", "https://*.repl.co"],
-    credentials: true,
-  }),
-)
+app.use(corsMiddleware)
 
 // Rate limiting
 const limiter = rateLimit({

@@ -16,7 +16,23 @@ import MetricsGrid from "@/components/MetricsGrid"
 import AlertsPanel from "@/components/AlertsPanel"
 import LoadingSpinner from "@/components/LoadingSpinner"
 
-const fetcher = (url: string) => fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`).then((res) => res.json())
+const fetcher = async (url: string) => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+  console.log('Fetching from:', `${apiUrl}${url}`)
+  
+  try {
+    const response = await fetch(`${apiUrl}${url}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const data = await response.json()
+    console.log('Fetched data:', data)
+    return data
+  } catch (error) {
+    console.error('Fetch error:', error)
+    throw error
+  }
+}
 
 export default function Dashboard() {
   const [selectedLocation, setSelectedLocation] = useState("bengaluru")
