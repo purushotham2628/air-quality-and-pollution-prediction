@@ -22,6 +22,10 @@ class DataCollector {
       return
     }
 
+    if (!process.env.OPENWEATHER_API_KEY || process.env.OPENWEATHER_API_KEY === 'your_openweather_api_key_here') {
+      console.log("⚠️  OpenWeather API key not configured, data collector will use mock data")
+    }
+
     console.log("🔄 Starting automated data collection...")
 
     cron.schedule("*/10 * * * *", async () => {

@@ -1,5 +1,6 @@
 const sqlite3 = require("sqlite3").verbose()
 const path = require("path")
+const fs = require("fs")
 
 const DB_PATH = path.join(__dirname, "air_quality.db")
 
@@ -10,6 +11,12 @@ class Database {
 
   async initialize() {
     return new Promise((resolve, reject) => {
+      // Ensure database directory exists
+      const dbDir = path.dirname(DB_PATH)
+      if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true })
+      }
+      
       this.db = new sqlite3.Database(DB_PATH, (err) => {
         if (err) {
           console.error("Error opening database:", err)
@@ -85,15 +92,23 @@ class Database {
       )`,
     ]
 
-    for (const table of tables) {
-      await this.run(table)
+    try {
+      for (const table of tables) {
+        await this.run(table)
+      }
+      console.log("✅ Database tables created successfully")
+    } catch (error) {
+      console.error("❌ Error creating tables:", error)
+      throw error
     }
-
-    console.log("✅ Database tables created successfully")
   }
 
   run(sql, params = []) {
     return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error('Database not initialized'))
+        return
+      }
       this.db.run(sql, params, function (err) {
         if (err) reject(err)
         else resolve({ id: this.lastID, changes: this.changes })
@@ -103,6 +118,10 @@ class Database {
 
   get(sql, params = []) {
     return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error('Database not initialized'))
+        return
+      }
       this.db.get(sql, params, (err, row) => {
         if (err) reject(err)
         else resolve(row)
@@ -112,6 +131,10 @@ class Database {
 
   all(sql, params = []) {
     return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error('Database not initialized'))
+        return
+      }
       this.db.all(sql, params, (err, rows) => {
         if (err) reject(err)
         else resolve(rows)
@@ -121,6 +144,10 @@ class Database {
 
   close() {
     return new Promise((resolve, reject) => {
+      if (!this.db) {
+        resolve()
+        return
+      }
       this.db.close((err) => {
         if (err) reject(err)
         else resolve()

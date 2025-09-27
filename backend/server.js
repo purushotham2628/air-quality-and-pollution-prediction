@@ -1,5 +1,4 @@
 const express = require("express")
-const cors = require("cors")
 const helmet = require("helmet")
 const rateLimit = require("express-rate-limit")
 const errorHandler = require("./middleware/errorHandler")
@@ -15,18 +14,24 @@ const PORT = process.env.PORT || 3001
 app.set('trust proxy', 1)
 
 // Security middleware
-app.use(helmet())
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: false
+}))
 app.use(corsMiddleware)
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
 })
 app.use(limiter)
 
 app.use(logger)
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // Import routes
 const airQualityRoutes = require("./routes/airQuality")

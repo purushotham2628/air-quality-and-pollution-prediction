@@ -93,7 +93,7 @@ Before starting, ensure you have:
 # Clone and setup everything
 git clone https://github.com/your-username/airsense.git
 cd airsense
-npm run setup
+node scripts/setup.js
 ```
 
 ---

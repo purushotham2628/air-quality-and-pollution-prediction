@@ -10,11 +10,18 @@ const corsOptions = {
       'http://127.0.0.1:5000',
       'http://localhost:3000',
       'http://127.0.0.1:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3001',
       process.env.FRONTEND_URL,
-    ]
+    ].filter(Boolean)
     
     // Add Replit domains
     if (origin.includes('replit.dev') || origin.includes('repl.co')) {
+      return callback(null, true)
+    }
+    
+    // Add Vercel domains
+    if (origin.includes('vercel.app')) {
       return callback(null, true)
     }
     
@@ -22,12 +29,18 @@ const corsOptions = {
       callback(null, true)
     } else {
       console.log('CORS blocked origin:', origin)
-      callback(new Error('Not allowed by CORS'))
+      // In development, allow all origins
+      if (process.env.NODE_ENV === 'development') {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
 }
 
 module.exports = cors(corsOptions)

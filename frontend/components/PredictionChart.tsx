@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
-import { format, addHours, parseISO } from "date-fns"
+import { format, addHours, parseISO, isValid } from "date-fns"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, Brain, AlertCircle } from "lucide-react"
@@ -21,27 +21,30 @@ interface PredictionChartProps {
 
 export default function PredictionChart({ data }: PredictionChartProps) {
   const chartData = useMemo(() => {
-    if (!data.length) return []
+    if (!data || !Array.isArray(data) || !data.length) return []
 
     // Group predictions by horizon (time)
     const groupedData = data.reduce((acc, item) => {
+      if (!item || typeof item.horizon !== 'number') return acc
+      
       const key = item.horizon
       if (!acc[key]) {
+        const futureTime = addHours(new Date(), key)
         acc[key] = {
           horizon: key,
-          timestamp: item.timestamp,
-          time: format(addHours(new Date(), key), "HH:mm"),
-          fullTime: format(addHours(new Date(), key), "MMM dd, HH:mm"),
+          timestamp: futureTime.toISOString(),
+          time: format(futureTime, "HH:mm"),
+          fullTime: format(futureTime, "MMM dd, HH:mm"),
         }
       }
 
-      if (item.type === "pm25") {
+      if (item.type === "pm25" && typeof item.value === 'number') {
         acc[key].pm25 = item.value
         acc[key].pm25_confidence = item.confidence
-      } else if (item.type === "pm10") {
+      } else if (item.type === "pm10" && typeof item.value === 'number') {
         acc[key].pm10 = item.value
         acc[key].pm10_confidence = item.confidence
-      } else if (item.type === "aqi") {
+      } else if (item.type === "aqi" && typeof item.value === 'number') {
         acc[key].aqi = item.value
         acc[key].aqi_confidence = item.confidence
       }
@@ -53,7 +56,7 @@ export default function PredictionChart({ data }: PredictionChartProps) {
   }, [data])
 
   const avgConfidence = useMemo(() => {
-    if (!data.length) return 0
+    if (!data || !Array.isArray(data) || !data.length) return 0
     return data.reduce((sum, item) => sum + item.confidence, 0) / data.length
   }, [data])
 

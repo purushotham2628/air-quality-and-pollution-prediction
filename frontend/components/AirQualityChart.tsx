@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts"
-import { format, parseISO } from "date-fns"
+import { format, parseISO, isValid } from "date-fns"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface AirQualityData {
@@ -20,14 +20,33 @@ interface AirQualityChartProps {
 
 export default function AirQualityChart({ data, showTrends = false }: AirQualityChartProps) {
   const chartData = useMemo(() => {
+    if (!data || !Array.isArray(data)) return []
+    
     return data
       .slice(0, 50) // Limit to last 50 data points for performance
       .reverse() // Show chronological order
-      .map((item) => ({
-        ...item,
-        time: format(parseISO(item.timestamp), "HH:mm"),
-        fullTime: format(parseISO(item.timestamp), "MMM dd, HH:mm"),
-      }))
+      .map((item) => {
+        try {
+          const date = parseISO(item.timestamp)
+          if (!isValid(date)) {
+            throw new Error('Invalid date')
+          }
+          return {
+            ...item,
+            time: format(date, "HH:mm"),
+            fullTime: format(date, "MMM dd, HH:mm"),
+          }
+        } catch (error) {
+          console.warn('Invalid timestamp:', item.timestamp)
+          const now = new Date()
+          return {
+            ...item,
+            time: format(now, "HH:mm"),
+            fullTime: format(now, "MMM dd, HH:mm"),
+          }
+        }
+      })
+      .filter(item => item.pm25 != null && item.pm10 != null && item.aqi != null)
   }, [data])
 
   const CustomTooltip = ({ active, payload, label }: any) => {

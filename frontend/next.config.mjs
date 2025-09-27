@@ -1,6 +1,7 @@
 const nextConfig = {
   experimental: {
-    optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion']
+    optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion'],
+    serverComponentsExternalPackages: []
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -9,39 +10,24 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['openweathermap.org'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'openweathermap.org',
+        port: '',
+        pathname: '/**',
+      },
+    ],
     unoptimized: true,
   },
   // Enable standalone output for better deployment
   output: 'standalone',
-  // Replit environment configuration
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ]
-  },
-  // Allow all hosts for Replit proxy
+  
+  // Development configuration
   devIndicators: {
     autoPrerender: false,
   },
-  // Allow all hosts for Replit 
-  async rewrites() {
-    return []
-  },
-  // Allow cross-origin for Replit
-  allowedDevOrigins: ['127.0.0.1'],
+  
   // Configure webpack for development
   webpack: (config, { dev }) => {
     if (dev) {
@@ -51,6 +37,21 @@ const nextConfig = {
       }
     }
     return config
+  },
+  
+  // Server configuration
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+        ],
+      },
+    ]
   },
 }
 

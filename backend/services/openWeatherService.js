@@ -21,7 +21,8 @@ const LOCATION_COORDS = {
 async function fetchOpenWeatherAirQuality(location = "bengaluru") {
   try {
     if (!API_KEY) {
-      throw new Error("OpenWeather API key not configured")
+      console.warn("OpenWeather API key not configured, using mock data")
+      return generateMockData(location)
     }
 
     const coords = LOCATION_COORDS[location.toLowerCase()] || BENGALURU_COORDS
@@ -105,6 +106,11 @@ async function fetchOpenWeatherAirQuality(location = "bengaluru") {
   } catch (error) {
     console.error("OpenWeather API Error:", error.response?.data || error.message)
 
+    // If API key is missing, return mock data instead of throwing
+    if (!API_KEY) {
+      return generateMockData(location)
+    }
+
     if (error.response?.status === 401) {
       throw new Error("Invalid OpenWeather API key")
     } else if (error.response?.status === 429) {
@@ -114,6 +120,48 @@ async function fetchOpenWeatherAirQuality(location = "bengaluru") {
     } else {
       throw new Error("Failed to fetch data from OpenWeather API")
     }
+  }
+}
+
+// Generate mock data for development/testing
+function generateMockData(location) {
+  const baseValues = {
+    pm25: 35 + Math.random() * 30,
+    pm10: 55 + Math.random() * 40,
+    no2: 25 + Math.random() * 20,
+    so2: 8 + Math.random() * 10,
+    co: 1200 + Math.random() * 800,
+    o3: 60 + Math.random() * 25,
+    temperature: 25 + Math.random() * 10,
+    humidity: 60 + Math.random() * 30,
+    pressure: 1013 + Math.random() * 20 - 10,
+    wind_speed: 3 + Math.random() * 5,
+    wind_direction: Math.random() * 360
+  }
+
+  return {
+    location,
+    timestamp: new Date().toISOString(),
+    coordinates: LOCATION_COORDS[location.toLowerCase()] || BENGALURU_COORDS,
+    pm25: validateNumber(baseValues.pm25, 0, 500),
+    pm10: validateNumber(baseValues.pm10, 0, 1000),
+    no2: validateNumber(baseValues.no2, 0, 1000),
+    so2: validateNumber(baseValues.so2, 0, 1000),
+    co: validateNumber(baseValues.co, 0, 50000),
+    o3: validateNumber(baseValues.o3, 0, 1000),
+    aqi: Math.min(500, Math.max(1, Math.round(baseValues.pm25 * 2.5))),
+    temperature: validateNumber(baseValues.temperature, -50, 60),
+    feels_like: validateNumber(baseValues.temperature + 2, -50, 60),
+    humidity: validateNumber(baseValues.humidity, 0, 100),
+    pressure: validateNumber(baseValues.pressure, 800, 1200),
+    wind_speed: validateNumber(baseValues.wind_speed, 0, 100),
+    wind_direction: validateNumber(baseValues.wind_direction, 0, 360),
+    visibility: 10000,
+    weather_condition: "Clear",
+    description: "clear sky",
+    weather_icon: "01d",
+    api_response_time: Date.now(),
+    data_quality: "mock"
   }
 }
 
