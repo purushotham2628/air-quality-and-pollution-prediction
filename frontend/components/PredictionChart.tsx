@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { format, addHours, parseISO, isValid } from "date-fns"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Brain, AlertCircle } from "lucide-react"
+import { TrendingUp, Brain, CircleAlert as AlertCircle } from "lucide-react"
 
 interface PredictionData {
   timestamp: string

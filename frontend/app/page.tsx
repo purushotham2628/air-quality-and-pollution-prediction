@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import useSWR from "swr"
-import { Wind, Activity, TrendingUp, AlertTriangle, CheckCircle, XCircle, BarChart3, Clock, MapPin } from "lucide-react"
+import { Wind, Activity, TrendingUp, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Circle as XCircle, ChartBar as BarChart3, Clock, MapPin } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
